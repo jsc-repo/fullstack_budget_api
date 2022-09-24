@@ -15,8 +15,23 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from . import views
+
+from allauth.socialaccount.providers.github import views as github_views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("auth/", include("dj_rest_auth.urls")),
+    # path("accounts/", include("allauth.urls")),
+    # path("accounts/", include("accounts.urls")),
     path("api/v1/", include("budgetAPI.urls")),
+    path("auth/github/", views.GitHubLogin.as_view(), name="github_login"),
+    path("auth/github/login/", github_views.oauth2_login),
+    path("auth/github/login/callback/", views.github_callback, name="github_callback"),
 ]
+
+# urlpatterns += [
+#     path("github/", views.GitHubLogin.as_view()),
+#     path("auth/github/login/", github_views.oauth2_login),
+#     path("auth/github/login/callback/", views.github_callback, name="github_callback"),
+# ]
