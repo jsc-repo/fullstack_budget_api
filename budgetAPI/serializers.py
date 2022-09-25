@@ -76,12 +76,16 @@ class WriteExpenseSerializer(serializers.ModelSerializer):
 
 
 class ReadProjectSerializer(serializers.ModelSerializer):
-    expenses = ReadExpenseSerializer(read_only=True, many=True)
+    # expenses = ReadExpenseSerializer(read_only=True, many=True)
+    expenses = serializers.SerializerMethodField()
 
     class Meta:
         model = Project
         fields = ["id", "name", "budget", "expenses"]
         read_only_fields = fields
+
+    def get_expenses(self, obj):
+        return obj.expenses.values("expense_name").count()
 
 
 class WriteProjectSerializer(serializers.ModelSerializer):

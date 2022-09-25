@@ -30,8 +30,6 @@ urlpatterns = [
     path("auth/github/login/callback/", views.github_callback, name="github_callback"),
 ]
 
-# urlpatterns += [
-#     path("github/", views.GitHubLogin.as_view()),
-#     path("auth/github/login/", github_views.oauth2_login),
-#     path("auth/github/login/callback/", views.github_callback, name="github_callback"),
-# ]
+urlpatterns += [
+    path("api-auth/", include("rest_framework.urls")),
+]

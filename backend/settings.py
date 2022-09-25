@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "dj_rest_auth",
-    "dj_rest_auth.registration",
+    # "dj_rest_auth.registration",
     "budgetAPI",
     "accounts",
     "allauth",
@@ -153,12 +153,25 @@ AUTH_USER_MODEL = "accounts.CustomUser"
 
 SITE_ID = 1
 
-# CORS_EXPOSE_HEADERS = ["Content-Type", "X-CSRFToken"]
-# CORS_ORIGIN_WHITELIST = [
-#     "http://127.0.0.1:5173",
-#     "http://localhost:5173",
-# ]
-CORS_ORIGIN_ALLOW_ALL = True
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.BasicAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        # "rest_framework.permissions.IsAuthenticated",
+    ],
+}
+
+
+CORS_EXPOSE_HEADERS = ["Content-Type", "X-CSRFToken"]
+CORS_ORIGIN_WHITELIST = [
+    "http://127.0.0.1:5173",
+    "http://localhost:5173",
+]
+# CORS_ORIGIN_ALLOW_ALL = True
 
 CORS_ALLOW_CREDENTIALS = True
 
