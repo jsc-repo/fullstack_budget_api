@@ -1,21 +1,23 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import axios from "axios";
+import useAuthStore from "../../store/authStore";
 
 const GitHubLogin = () => {
   const navigate = useNavigate();
-  const [accessKey, getAccessKey] = useState("");
   const [params] = useSearchParams();
-  console.log("PARAMS", params);
-  const code = params.get("code");
+  const github_code = params.get("code");
+
+  const setToken = useAuthStore((state) => state.setToken);
 
   async function authGitHub() {
-    if (code) {
+    if (github_code) {
       const requestOptions = {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ code: code }),
+        body: JSON.stringify({ code: github_code }),
       };
 
       try {
@@ -26,6 +28,7 @@ const GitHubLogin = () => {
         if (res.ok) {
           const data = await res.json();
           sessionStorage.setItem("github_key", data.key);
+          setToken(data.key);
           navigate("/");
         } else {
           console.error(res.error);

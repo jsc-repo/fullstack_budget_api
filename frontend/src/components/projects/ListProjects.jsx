@@ -1,20 +1,33 @@
-const ListProjects = ({ projects }) => {
+import { Link, Outlet } from "react-router-dom";
+
+import { useQuery } from "@tanstack/react-query";
+import DetailProject from "./DetailProject";
+import useAuthStore from "../../store/authStore";
+
+const ListProjects = () => {
+  const token = useAuthStore((state) => state.token);
+  const fetchProjects = useAuthStore((state) => state.fetchProjects);
+  const { isLoading, isError, data, error } = useQuery(
+    ["projects"],
+    fetchProjects
+  );
+
   return (
     <>
-      {projects.map((p) => {
-        return (
-          <div
-            key={p.id}
-            className="stats stats-vertical lg:stats-horizontal shadow-2xl bg-gray-500"
-          >
-            <div className="stat">
-              <div className="stat-title">{p.name}</div>
-              <div className="stat-value">${p.budget}</div>
-              <div className="stat-desc">Expenses: {p.expenses}</div>
-            </div>
-          </div>
-        );
-      })}
+      {isLoading && (
+        <div className="alert alert-info shadow-lg text-xl text-center">
+          <span>Loading</span>
+        </div>
+      )}
+      {isError && (
+        <h3 className="text-red-500">
+          {error.message ? error.message : error}
+        </h3>
+      )}
+      {!isLoading && !isError && data && !data.length && (
+        <span className="text-red-400">You have no projects</span>
+      )}
+      {data && data.length > 0 && <DetailProject projects={data} />}
     </>
   );
 };

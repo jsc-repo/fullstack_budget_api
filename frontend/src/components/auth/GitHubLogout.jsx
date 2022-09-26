@@ -1,6 +1,9 @@
 import { useNavigate } from "react-router-dom";
+import useAuthStore from "../../store/authStore";
 
 const GitHubLogout = () => {
+  const removeToken = useAuthStore((state) => state.removeToken);
+  const removeUser = useAuthStore((state) => state.removeUser);
   const navigate = useNavigate();
   const handleSubmitLogout = async (e) => {
     e.preventDefault();
@@ -13,6 +16,8 @@ const GitHubLogout = () => {
       });
       if (res.ok) {
         sessionStorage.removeItem("github_key");
+        removeToken();
+        removeUser();
         navigate(0);
       }
     } catch (error) {

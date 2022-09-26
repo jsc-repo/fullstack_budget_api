@@ -1,4 +1,5 @@
 from django.shortcuts import render
+
 from budgetAPI.models import Profile, Category, Expense, Project
 from budgetAPI.permissions import IsOwnerOnly, IsOwnerOrReadOnly
 from budgetAPI.serializers import (
@@ -10,7 +11,9 @@ from budgetAPI.serializers import (
     WriteExpenseSerializer,
     # ReadUserSerializer,
 )
-from rest_framework import generics, permissions, viewsets
+from rest_framework import generics, permissions, viewsets, status
+from rest_framework.response import Response
+from rest_framework.decorators import action
 
 
 # Create your views here.
@@ -33,6 +36,14 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         return serializer.save(user=self.request.user)
+
+    @action(methods=["get"], detail=True)
+    def expenses(self, request, pk=None):
+        if request.method == "GET":
+            queryset = Expense.objects.filter(project__id=pk)
+            serializer = ReadExpenseSerializer(queryset, many=True)
+            return Response(serializer.data)
+        return Response(status=status.HTTP_403_FORBIDDEN)
 
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):

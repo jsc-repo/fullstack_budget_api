@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
-import { useAuthUserQuery } from "../hooks/useAuthUserQuery";
 import GitHubLogout from "./auth/GitHubLogout";
+import useAuthStore from "../store/authStore";
+import { useEffect } from "react";
+import { useState } from "react";
 
 const Navbar = () => {
-  const { data } = useAuthUserQuery();
+  const user = useAuthStore((state) => state.user);
 
   return (
     <div className="navbar bg-base-100">
@@ -13,7 +15,7 @@ const Navbar = () => {
         </Link>
       </div>
       <div className="flex-none gap-2">
-        {data ? (
+        {user ? (
           <>
             <GitHubLogout />
             <div className="dropdown dropdown-end">
@@ -24,7 +26,7 @@ const Navbar = () => {
               </label>
               <ul
                 tabIndex={0}
-                className="mt-3 p-2 shadow menu menu-compact dropdown-content bg-base-100 rounded-box w-52"
+                className="mt-3 p-2 shadow menu menu-compact dropdown-content bg-gray-600 rounded-box w-52"
               >
                 <li>
                   <a className="justify-between">
