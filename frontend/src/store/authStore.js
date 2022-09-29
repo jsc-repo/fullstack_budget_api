@@ -74,6 +74,54 @@ const useAuthStore = create((set, get) => ({
       console.error(error);
     }
   },
+  createProject: async (name, budget) => {
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Token ${get().token}`,
+      },
+      body: JSON.stringify({ name, budget }),
+    };
+    try {
+      const res = await fetch(
+        "http://127.0.0.1:8000/api/v1/projects/",
+        requestOptions
+      );
+      if (res.ok) {
+        // const data = await res.json();
+        // return data;
+      } else {
+        console.error(res.error);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  },
+  deleteProjectById: async (id) => {
+    const requestOptions = {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Token ${get().token}`,
+      },
+    };
+    try {
+      const res = await fetch(
+        "http://127.0.0.1:8000/api/v1/projects/",
+        requestOptions
+      );
+      if (res.ok) {
+        navigate("/projects");
+        // const data = await res.json();
+        // return data;
+      } else {
+        console.error(res.error);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  },
 }));
 
 export default useAuthStore;

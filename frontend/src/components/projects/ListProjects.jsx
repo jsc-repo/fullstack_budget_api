@@ -5,7 +5,6 @@ import DetailProject from "./DetailProject";
 import useAuthStore from "../../store/authStore";
 
 const ListProjects = () => {
-  const token = useAuthStore((state) => state.token);
   const fetchProjects = useAuthStore((state) => state.fetchProjects);
   const { isLoading, isError, data, error } = useQuery(
     ["projects"],
@@ -14,6 +13,9 @@ const ListProjects = () => {
 
   return (
     <>
+      <label htmlFor="my-modal-3" className="btn modal-button">
+        Create Project
+      </label>
       {isLoading && (
         <div className="alert alert-info shadow-lg text-xl text-center">
           <span>Loading</span>

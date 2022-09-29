@@ -13,6 +13,7 @@ const ListExpenses = () => {
 
   return (
     <>
+      <div>DELETE</div>
       {isLoading && <div className="alert alert-success">Loading</div>}
 
       {data && !isError && data.length > 0 && (

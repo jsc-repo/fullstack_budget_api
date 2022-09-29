@@ -6,6 +6,7 @@ import GitHubLogout from "./components/auth/GitHubLogout";
 import ProtectedRoutes from "./components/auth/ProtectedRoutes";
 import ListCategory from "./components/categories/ListCategory";
 import ListExpenses from "./components/expenses/ListExpenses";
+import CreateProjectForm from "./components/projects/CreateProjectForm";
 import ListProjects from "./components/projects/ListProjects";
 import BaseLayout from "./pages/BaseLayout";
 import Expense from "./pages/Expense";
@@ -24,6 +25,7 @@ function App() {
 
   return (
     <>
+      <CreateProjectForm />
       <Routes>
         <Route element={<BaseLayout />}>
           <Route index element={<Index />} />
@@ -33,6 +35,7 @@ function App() {
           <Route path="categories" element={<ListCategory />} />
           <Route element={<ProtectedRoutes user={user} />}>
             <Route path="projects" element={<Project />}>
+              <Route path="create" element={<CreateProjectForm />} />
               <Route path=":projectId" element={<ListExpenses />} />
               <Route index element={<ListProjects />} />
             </Route>
