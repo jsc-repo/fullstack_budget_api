@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { useParams } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
+import DeleteProjectForm from "../projects/DeleteProjectForm";
 
 const ListExpenses = () => {
   const { projectId } = useParams();
@@ -13,11 +14,14 @@ const ListExpenses = () => {
 
   return (
     <>
-      <div>DELETE</div>
+      <label htmlFor="deleteProjectModal" className="btn modal-button">
+        Delete Project
+      </label>
+      <DeleteProjectForm projectId={projectId} />
       {isLoading && <div className="alert alert-success">Loading</div>}
 
       {data && !isError && data.length > 0 && (
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto mt-2">
           <table className="table w-full">
             <thead>
               <tr>

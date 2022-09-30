@@ -35,7 +35,6 @@ function App() {
           <Route path="categories" element={<ListCategory />} />
           <Route element={<ProtectedRoutes user={user} />}>
             <Route path="projects" element={<Project />}>
-              <Route path="create" element={<CreateProjectForm />} />
               <Route path=":projectId" element={<ListExpenses />} />
               <Route index element={<ListProjects />} />
             </Route>

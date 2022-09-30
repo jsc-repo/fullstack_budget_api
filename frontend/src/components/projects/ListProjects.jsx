@@ -1,8 +1,7 @@
-import { Link, Outlet } from "react-router-dom";
-
 import { useQuery } from "@tanstack/react-query";
 import DetailProject from "./DetailProject";
 import useAuthStore from "../../store/authStore";
+import { useEffect } from "react";
 
 const ListProjects = () => {
   const fetchProjects = useAuthStore((state) => state.fetchProjects);
@@ -13,7 +12,7 @@ const ListProjects = () => {
 
   return (
     <>
-      <label htmlFor="my-modal-3" className="btn modal-button">
+      <label htmlFor="createProjectModal" className="btn modal-button">
         Create Project
       </label>
       {isLoading && (

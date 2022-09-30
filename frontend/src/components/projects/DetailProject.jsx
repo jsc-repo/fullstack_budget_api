@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 const DetailProject = ({ projects }) => {
   return (
     <>
-      <div className="grid grid-cols-3 gap-4 mt-3">
+      <div className="grid lg:grid-cols-3 gap-4 mt-3 md:grid-cols-2">
         {projects.map((p) => {
           return (
             <div key={p.id}>
