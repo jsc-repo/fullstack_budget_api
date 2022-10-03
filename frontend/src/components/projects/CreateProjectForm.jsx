@@ -1,9 +1,12 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 
 const CreateProjectForm = () => {
   const createProject = useAuthStore((state) => state.createProject);
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const {
     register,
@@ -12,12 +15,22 @@ const CreateProjectForm = () => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    createProject(data.name, data.budget);
-    reset();
-    document.getElementById("createProjectModal").checked = false;
+  const { mutate } = useMutation(createProject, {
+    onSuccess: (data) => {
+      console.log("onSuccess", data);
+      reset();
+      queryClient.invalidateQueries(["projects"]);
+      document.getElementById("createProjectModal").checked = false;
+      navigate("/projects", { replace: true });
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
 
-    navigate("projects");
+  const onSubmit = (data) => {
+    console.log(data);
+    mutate({ name: data.name, budget: data.budget });
   };
 
   return (
@@ -48,14 +61,23 @@ const CreateProjectForm = () => {
             )}
             <input
               className="input input-bordered w-full"
-              placeholder="budget"
+              placeholder="budget amount ex: 1234.50"
               type="number"
-              {...register("budget", { required: true, min: 0 })}
+              {...register("budget", {
+                required: true,
+                min: 0,
+                max: 99999999,
+              })}
               aria-invalid={errors.budget ? "true" : "false"}
             />
-            {errors.name?.type === "required" && (
+            {errors.budget?.type === "required" && (
               <p className="text-red-500" role="alert">
                 Set a budget
+              </p>
+            )}
+            {errors.budget?.type === "max" && (
+              <p className="text-red-500" role="alert">
+                over budget
               </p>
             )}
             <input className="btn btn-md" type="submit" value="Create" />

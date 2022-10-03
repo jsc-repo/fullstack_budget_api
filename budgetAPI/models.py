@@ -68,7 +68,7 @@ class Expense(models.Model):
         blank=True,
     )
     expense_name = models.CharField(max_length=100)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     date_of_expense = models.DateField()
     created_at = models.DateTimeField(name="created at", auto_now_add=True)
 

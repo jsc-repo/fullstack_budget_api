@@ -5,16 +5,18 @@ import { useEffect } from "react";
 
 const ListProjects = () => {
   const fetchProjects = useAuthStore((state) => state.fetchProjects);
-  const { isLoading, isError, data, error } = useQuery(
+  const { isLoading, isError, data, error, refetch } = useQuery(
     ["projects"],
     fetchProjects
   );
 
   return (
     <>
-      <label htmlFor="createProjectModal" className="btn modal-button">
-        Create Project
-      </label>
+      <div>
+        <label htmlFor="createProjectModal" className="btn modal-button">
+          Create Project
+        </label>
+      </div>
       {isLoading && (
         <div className="alert alert-info shadow-lg text-xl text-center">
           <span>Loading</span>

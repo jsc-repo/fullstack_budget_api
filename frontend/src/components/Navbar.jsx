@@ -1,8 +1,6 @@
 import { Link } from "react-router-dom";
 import GitHubLogout from "./auth/GitHubLogout";
 import useAuthStore from "../store/authStore";
-import { useEffect } from "react";
-import { useState } from "react";
 
 const Navbar = () => {
   const user = useAuthStore((state) => state.user);

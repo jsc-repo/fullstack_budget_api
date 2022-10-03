@@ -1,5 +1,4 @@
 import create from "zustand";
-import { subscribeWithSelector } from "zustand/middleware";
 
 const useAuthStore = create((set, get) => ({
   user: null,
@@ -23,6 +22,7 @@ const useAuthStore = create((set, get) => ({
       set(() => ({
         user: { ...data },
       }));
+
       return data;
     } else {
       return null;
@@ -74,7 +74,8 @@ const useAuthStore = create((set, get) => ({
       console.error(error);
     }
   },
-  createProject: async (name, budget) => {
+  createProject: async ({ name, budget }) => {
+    console.log(name, budget);
     const requestOptions = {
       method: "POST",
       headers: {
@@ -89,8 +90,7 @@ const useAuthStore = create((set, get) => ({
         requestOptions
       );
       if (res.ok) {
-        // const data = await res.json();
-        // return data;
+        return res.status;
       } else {
         console.error(res.error);
       }
@@ -112,8 +112,42 @@ const useAuthStore = create((set, get) => ({
         requestOptions
       );
       if (res.ok) {
-        // const data = await res.json();
-        // return data;
+        return res.status;
+      } else {
+        console.error(res.error);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  },
+  createExpense: async ({
+    projectId,
+    expense_name,
+    amount,
+    date_of_expense,
+    category,
+  }) => {
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Token ${get().token}`,
+      },
+      body: JSON.stringify({
+        project: projectId,
+        expense_name,
+        amount,
+        date_of_expense,
+        category,
+      }),
+    };
+    try {
+      const res = await fetch(
+        "http://127.0.0.1:8000/api/v1/expenses/",
+        requestOptions
+      );
+      if (res.ok) {
+        return res.status;
       } else {
         console.error(res.error);
       }

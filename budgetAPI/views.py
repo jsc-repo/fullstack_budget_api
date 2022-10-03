@@ -40,8 +40,13 @@ class ProjectViewSet(viewsets.ModelViewSet):
     @action(methods=["get"], detail=True)
     def expenses(self, request, pk=None):
         if request.method == "GET":
-            queryset = Expense.objects.filter(project__id=pk)
+            # this is needed to check if the project exists
+            project = Project.objects.get(pk=pk)
+
+            queryset = project.expenses.all()
             serializer = ReadExpenseSerializer(queryset, many=True)
+            # queryset = Expense.objects.filter(project__id=pk)
+            # serializer = ReadExpenseSerializer(queryset, many=True)
             return Response(serializer.data)
         return Response(status=status.HTTP_403_FORBIDDEN)
 

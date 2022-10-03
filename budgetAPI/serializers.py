@@ -1,3 +1,4 @@
+from threading import local
 from django.conf import settings
 from rest_framework import serializers
 from budgetAPI.models import Category, Expense, Profile, Project
@@ -22,13 +23,16 @@ from budgetAPI.models import Category, Expense, Profile, Project
 class ReadCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ["category_name"]
+        fields = ["id", "category_name"]
         read_only_fields = fields
 
 
 class ReadExpenseSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     category = ReadCategorySerializer(read_only=True)
+    amount = serializers.DecimalField(
+        max_digits=10, decimal_places=2, default=0, localize=True
+    )
 
     class Meta:
         model = Expense
@@ -56,6 +60,10 @@ class ReadExpenseSerializer(serializers.ModelSerializer):
 class WriteExpenseSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     # project = serializers.PrimaryKeyRelatedField(queryset=Project.objects.all())
+    # category = serializers.SlugRelatedField(
+    #     slug_field="category", queryset=Expense.objects.all(), many=True
+    # )
+    category = serializers.CharField()
 
     class Meta:
         model = Expense
@@ -74,10 +82,21 @@ class WriteExpenseSerializer(serializers.ModelSerializer):
         user = request.user
         self.fields.get("project").queryset = user.projects.all()
 
+    def create(self, validated_data):
+        category_data = validated_data.pop("category")
+        # category = category_data[0]
+        category_name = Category.objects.get(category_name=category_data)
+        expense = Expense.objects.create(**validated_data, category=category_name)
+
+        return expense
+
 
 class ReadProjectSerializer(serializers.ModelSerializer):
     # expenses = ReadExpenseSerializer(read_only=True, many=True)
     expenses = serializers.SerializerMethodField()
+    budget = serializers.DecimalField(
+        max_digits=10, decimal_places=2, default=0, localize=True
+    )
 
     class Meta:
         model = Project
@@ -90,8 +109,6 @@ class ReadProjectSerializer(serializers.ModelSerializer):
 
 class WriteProjectSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    # def create(self, validated_data):
-    #     return super().create(validated_data)
 
     class Meta:
         model = Project
@@ -112,3 +129,21 @@ class ProfileSerializer(serializers.ModelSerializer):
 #             "username",
 #         ]
 #         read_only_fields = fields
+
+
+# class Album(models.Model):
+#     album_name = models.CharField(max_length=100)
+#     artist = models.CharField(max_length=100)
+
+# class Track(models.Model):
+#     album = models.ForeignKey(Album, related_name='tracks', on_delete=models.CASCADE)
+#     order = models.IntegerField()
+#     title = models.CharField(max_length=100)
+#     duration = models.IntegerField()
+
+#     class Meta:
+#         unique_together = ['album', 'order']
+#         ordering = ['order']
+
+#     def __str__(self):
+#         return '%d: %s' % (self.order, self.title)

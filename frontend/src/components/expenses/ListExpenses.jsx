@@ -1,23 +1,27 @@
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { Navigate, useParams } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 import DeleteProjectForm from "../projects/DeleteProjectForm";
+import CreateExpense from "./CreateExpense";
 
 const ListExpenses = () => {
   const { projectId } = useParams();
 
   const fetchExpenses = useAuthStore((state) => state.fetchExpenses);
-  const { isLoading, isError, error, data } = useQuery(["expenses"], () =>
-    fetchExpenses(projectId)
+  const { isLoading, isError, error, data } = useQuery(
+    ["expenses", projectId],
+    () => fetchExpenses(projectId)
   );
 
   return (
     <>
-      <label htmlFor="deleteProjectModal" className="btn modal-button">
-        Delete Project
-      </label>
-      <DeleteProjectForm projectId={projectId} />
+      <div className="flex justify-between">
+        <CreateExpense projectId={projectId} />
+        <DeleteProjectForm projectId={projectId} />
+      </div>
+
       {isLoading && <div className="alert alert-success">Loading</div>}
 
       {data && !isError && data.length > 0 && (
@@ -38,9 +42,13 @@ const ListExpenses = () => {
                   <tr key={expense.id}>
                     <th>{expense.id}</th>
                     <td>{expense.expense_name}</td>
-                    <td>{expense.amount}</td>
+                    <td>${expense.amount}</td>
                     <td>{expense.date_of_expense}</td>
-                    <td>{expense.category["category_name"]}</td>
+                    <td>
+                      {expense.category
+                        ? expense.category["category_name"]
+                        : ""}
+                    </td>
                   </tr>
                 );
               })}
