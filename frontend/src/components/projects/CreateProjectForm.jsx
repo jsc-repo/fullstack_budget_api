@@ -15,8 +15,14 @@ const CreateProjectForm = () => {
     formState: { errors },
   } = useForm();
 
+  const setNotification = useAuthStore((state) => state.setNotification);
+
   const { mutate } = useMutation(createProject, {
     onSuccess: (data) => {
+      setNotification({ message: "Project Created!", color: "success" });
+      setTimeout(() => {
+        setNotification({ message: null, color: null });
+      }, 2000);
       console.log("onSuccess", data);
       reset();
       queryClient.invalidateQueries(["projects"]);

@@ -4,6 +4,10 @@ const useAuthStore = create((set, get) => ({
   user: null,
   setUser: (userData) => set({ user: userData }),
   removeUser: () => set({ user: null }),
+  notification: { message: null, color: null },
+  setNotification: ({ message, color }) => {
+    set({ notification: { message, color } });
+  },
   token: sessionStorage?.getItem("github_key"),
   setToken: (userToken) => set({ token: userToken }),
   removeToken: () => set({ token: null }),
@@ -149,7 +153,7 @@ const useAuthStore = create((set, get) => ({
       if (res.ok) {
         return res.status;
       } else {
-        console.error(res.error);
+        return res.status;
       }
     } catch (error) {
       console.error(error);

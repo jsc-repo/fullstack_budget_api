@@ -1,6 +1,9 @@
 import React from "react";
 
-const Message = ({ color, message }) => {
+const Notification = ({ message, color }) => {
+  if (message == null) {
+    return null;
+  }
   return (
     <div className={`alert alert-${color} shadow-lg`}>
       <div>
@@ -10,4 +13,4 @@ const Message = ({ color, message }) => {
   );
 };
 
-export default Message;
+export default Notification;

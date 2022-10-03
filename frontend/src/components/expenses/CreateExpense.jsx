@@ -10,6 +10,8 @@ const CreateExpense = ({ projectId }) => {
   const queryClient = useQueryClient();
   const [categories, setCategories] = useState([]);
 
+  const setNotification = useAuthStore((state) => state.setNotification);
+
   useEffect(() => {
     const fetchCategories = async () => {
       const res = await fetch("http://127.0.0.1:8000/api/v1/categories");
@@ -28,6 +30,11 @@ const CreateExpense = ({ projectId }) => {
 
   const { mutate } = useMutation(createExpense, {
     onSuccess: (data) => {
+      console.log(data);
+      setNotification({ message: "Expense Created!", color: "success" });
+      setTimeout(() => {
+        setNotification({ message: null, color: null });
+      }, 2000);
       reset();
       document.getElementById("addExpenseModal").checked = false;
       queryClient.invalidateQueries(["expenses"]);
@@ -78,6 +85,7 @@ const CreateExpense = ({ projectId }) => {
               className="input input-bordered w-full"
               placeholder="amount"
               type="number"
+              step="0.01"
               {...register("amount", {
                 required: true,
                 min: 0,

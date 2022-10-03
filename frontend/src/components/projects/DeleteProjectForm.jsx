@@ -6,10 +6,15 @@ const DeleteProjectForm = ({ projectId }) => {
   const deleteProjectById = useAuthStore((state) => state.deleteProjectById);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const setNotification = useAuthStore((state) => state.setNotification);
 
   const { mutate } = useMutation(deleteProjectById, {
     onSuccess: (data) => {
       console.log(data);
+      setNotification({ message: "Project Deleted", color: "error" });
+      setTimeout(() => {
+        setNotification({ message: null, color: null });
+      }, 2000);
       queryClient.invalidateQueries(["projects"]);
       navigate("/projects", { replace: true });
     },
