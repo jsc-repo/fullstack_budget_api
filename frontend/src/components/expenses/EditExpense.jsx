@@ -1,13 +1,11 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 
-const CreateExpense = ({ projectId }) => {
-  const createExpense = useAuthStore((state) => state.createExpense);
-  const navigate = useNavigate();
+const EditExpense = ({ projectId, expense }) => {
   const queryClient = useQueryClient();
+  const editExpense = useAuthStore((state) => state.editExpense);
   const setNotification = useAuthStore((state) => state.setNotification);
 
   const [categories, setCategories] = useState([]);
@@ -25,47 +23,67 @@ const CreateExpense = ({ projectId }) => {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm();
 
-  const { mutate } = useMutation(createExpense, {
+  const amount = expense.amount.replaceAll(",", "");
+
+  const handleEdit = () => {
+    setValue("expense_name", expense.expense_name);
+    setValue("amount", amount);
+    setValue("date_of_expense", expense.date_of_expense);
+    setValue("category", expense.category.category_name);
+  };
+
+  const { mutate } = useMutation(editExpense, {
     onSuccess: (data) => {
-      console.log(data);
-      setNotification({ message: "Expense Created!", color: "success" });
+      setNotification({ message: "Expense updated", color: "success" });
       setTimeout(() => {
         setNotification({ message: null, color: null });
       }, 2000);
       reset();
-      document.getElementById("addExpenseModal").checked = false;
-      queryClient.invalidateQueries(["expenses"]);
+      queryClient.invalidateQueries("expenses");
     },
   });
 
   const onSubmit = (data) => {
-    const expenseFormData = { ...data, projectId };
-    console.log(expenseFormData);
-    mutate(expenseFormData);
-  };
+    const requestBody = {
+      expenseId: expense.id,
+      projectId,
+      expense_name: data.expense_name,
+      amount: data.amount,
+      date_of_expense: data.date_of_expense,
+      category: data.category,
+    };
 
-  const handleModal = () => {
-    document.getElementById("addExpenseModal").checked = false;
+    mutate(requestBody);
+    document.getElementById(`editExpenseModal-${expense.id}`).checked = false;
   };
 
   return (
     <>
-      <label htmlFor="addExpenseModal" className="btn modal-button">
-        Add Expense
+      <label
+        onClick={handleEdit}
+        htmlFor={`editExpenseModal-${expense.id}`}
+        className="btn modal-btn btn-outline btn-warning btn-xs"
+      >
+        Edit
       </label>
-      <input type="checkbox" id="addExpenseModal" className="modal-toggle" />
+      <input
+        type="checkbox"
+        id={`editExpenseModal-${expense.id}`}
+        className="modal-toggle"
+      />
       <div className="modal">
         <div className="modal-box relative">
           <label
-            htmlFor="addExpenseModal"
+            htmlFor={`editExpenseModal-${expense.id}`}
             className="btn btn-sm btn-circle absolute right-2 top-2"
           >
             ✕
           </label>
-          <h3 className="text-lg font-bold">Create Expense</h3>
+          <h3 className="text-lg font-bold">Edit Expense</h3>
           <form
             className="py-4 flex flex-col w-4/5 mx-auto space-y-2 max-w-xs"
             onSubmit={handleSubmit(onSubmit)}
@@ -73,7 +91,10 @@ const CreateExpense = ({ projectId }) => {
             <input
               className="input input-bordered w-full"
               placeholder="expense name"
-              {...register("expense_name", { required: true, maxLength: 50 })}
+              {...register("expense_name", {
+                required: true,
+                maxLength: 50,
+              })}
               aria-invalid={errors.expense_name ? "true" : "false"}
             />
             {errors.expense_name?.type === "required" && (
@@ -81,12 +102,14 @@ const CreateExpense = ({ projectId }) => {
                 Expense name is required
               </p>
             )}
+
             <input
+              type="number"
               className="input input-bordered w-full"
               placeholder="amount"
-              type="number"
               step="0.01"
               {...register("amount", {
+                valueAsNumber: true,
                 required: true,
                 min: 0,
                 max: 99999999,
@@ -95,26 +118,31 @@ const CreateExpense = ({ projectId }) => {
             />
             {errors.amount?.type === "required" && (
               <p className="text-red-500" role="alert">
-                Set an expense amount
+                set an expense amount
               </p>
             )}
-            {errors.amount?.type === "amount" && (
+            {errors.amount?.type === "max" && (
               <p className="text-red-500" role="alert">
                 too high
               </p>
             )}
+
             <input
               className="input input-bordered w-full"
               placeholder="date"
               type="date"
-              {...register("date_of_expense", { required: true, min: 0 })}
+              {...register("date_of_expense", {
+                required: true,
+                min: 0,
+              })}
               aria-invalid={errors.date_of_expense ? "true" : "false"}
             />
             {errors.date_of_expense?.type === "required" && (
               <p className="text-red-500" role="alert">
-                Set a budget
+                please pick the date of the expense
               </p>
             )}
+
             <select
               className="select select-bordered"
               {...register("category", { required: true })}
@@ -132,7 +160,7 @@ const CreateExpense = ({ projectId }) => {
               </p>
             )}
 
-            <input className="btn btn-md" type="submit" value="Add Expense" />
+            <input className="btn btn-md" type="submit" value="Edit Expense" />
           </form>
         </div>
       </div>
@@ -140,4 +168,4 @@ const CreateExpense = ({ projectId }) => {
   );
 };
 
-export default CreateExpense;
+export default EditExpense;

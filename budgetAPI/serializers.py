@@ -90,6 +90,20 @@ class WriteExpenseSerializer(serializers.ModelSerializer):
 
         return expense
 
+    def update(self, instance, validated_data):
+        category_data = validated_data.pop("category")
+        category_name = Category.objects.get(category_name=category_data)
+
+        instance.project = validated_data.get("project")
+        instance.expense_name = validated_data.get("expense_name")
+        instance.amount = validated_data.get("amount")
+        instance.date_of_expense = validated_data.get("date_of_expense")
+        instance.category = category_name
+
+        instance.save()
+
+        return instance
+
 
 class ReadProjectSerializer(serializers.ModelSerializer):
     # expenses = ReadExpenseSerializer(read_only=True, many=True)

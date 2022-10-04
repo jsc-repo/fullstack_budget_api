@@ -118,7 +118,7 @@ const useAuthStore = create((set, get) => ({
       if (res.ok) {
         return res.status;
       } else {
-        console.error(res.error);
+        console.error(res.status);
       }
     } catch (error) {
       console.error(error);
@@ -154,6 +154,64 @@ const useAuthStore = create((set, get) => ({
         return res.status;
       } else {
         return res.status;
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  },
+  deleteExpenseById: async (id) => {
+    const requestOptions = {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Token ${get().token}`,
+      },
+    };
+    try {
+      const res = await fetch(
+        `http://127.0.0.1:8000/api/v1/expenses/${id}`,
+        requestOptions
+      );
+      if (res.ok) {
+        return res.status;
+      } else {
+        console.error(res.status);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  },
+  editExpense: async ({
+    projectId,
+    expenseId,
+    expense_name,
+    amount,
+    date_of_expense,
+    category,
+  }) => {
+    const requestOptions = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Token ${get().token}`,
+      },
+      body: JSON.stringify({
+        project: projectId,
+        expense_name,
+        amount,
+        date_of_expense,
+        category,
+      }),
+    };
+    try {
+      const res = await fetch(
+        `http://127.0.0.1:8000/api/v1/expenses/${expenseId}/`,
+        requestOptions
+      );
+      if (res.ok) {
+        return res.status;
+      } else {
+        console.error(res.status);
       }
     } catch (error) {
       console.error(error);

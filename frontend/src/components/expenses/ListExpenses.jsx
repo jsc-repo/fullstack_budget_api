@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
-import { useEffect } from "react";
-import { Navigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 import DeleteProjectForm from "../projects/DeleteProjectForm";
 import CreateExpense from "./CreateExpense";
+import DeleteExpense from "./DeleteExpense";
+import EditExpense from "./EditExpense";
 
 const ListExpenses = () => {
   const { projectId } = useParams();
@@ -34,6 +35,7 @@ const ListExpenses = () => {
                 <th>Amount</th>
                 <th>Date</th>
                 <th>Category</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -48,6 +50,10 @@ const ListExpenses = () => {
                       {expense.category
                         ? expense.category["category_name"]
                         : ""}
+                    </td>
+                    <td className="space-x-2">
+                      <DeleteExpense expenseId={expense.id} />
+                      <EditExpense projectId={projectId} expense={expense} />
                     </td>
                   </tr>
                 );
