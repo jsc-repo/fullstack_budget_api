@@ -4,14 +4,23 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from allauth.account.signals import user_logged_in
+
 
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     bio = models.TextField(max_length=500, blank=True)
     birth_date = models.DateField(null=True, blank=True)
 
-    def __str__(self) -> str:
-        return self.user.username
+    # @receiver(user_logged_in)
+    # def populate_profile(sociallogin, user, *args, **kwargs):
+    #     user.profile = Profile()
+
+    #     user.socialaccount_set
+    #     if sociallogin.account.provider=="github":
+
+    # def __str__(self) -> str:
+    #     return self.user.username
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)

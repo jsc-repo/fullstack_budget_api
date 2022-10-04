@@ -16,12 +16,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from . import views
-
+from dj_rest_auth.views import LogoutView, UserDetailsView
 from allauth.socialaccount.providers.github import views as github_views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("auth/", include("dj_rest_auth.urls")),
+    # path("auth/", include("dj_rest_auth.urls")),
+    path("auth/logout/", LogoutView.as_view()),
+    path("auth/user/", UserDetailsView.as_view()),
     # path("accounts/", include("allauth.urls")),
     # path("accounts/", include("accounts.urls")),
     path("api/v1/", include("budgetAPI.urls")),

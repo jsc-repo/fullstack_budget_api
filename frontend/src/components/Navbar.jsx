@@ -1,9 +1,30 @@
 import { Link } from "react-router-dom";
 import GitHubLogout from "./auth/GitHubLogout";
 import useAuthStore from "../store/authStore";
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
   const user = useAuthStore((state) => state.user);
+
+  const [avatarUrl, setAvatarUrl] = useState("");
+
+  const fetchGitHubUser = async () => {
+    try {
+      const res = await fetch(`https://api.github.com/users/${user.username}`);
+      if (res.ok) {
+        const data = await res.json();
+        setAvatarUrl(data["avatar_url"]);
+      } else {
+        console.error(res.status);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchGitHubUser();
+  }, [user]);
 
   return (
     <div className="navbar bg-base-100">
@@ -19,7 +40,7 @@ const Navbar = () => {
             <div className="dropdown dropdown-end">
               <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
                 <div className="w-10 rounded-full">
-                  <img src="https://placeimg.com/80/80/people" />
+                  <img src={avatarUrl} />
                 </div>
               </label>
               <ul
