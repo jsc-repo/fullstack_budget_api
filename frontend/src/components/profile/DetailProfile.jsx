@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import useAuthStore from "../../store/authStore";
+import DeleteProfile from "./DeleteProfile";
 import EditProfile from "./EditProfile";
 
 const DetailProfile = () => {
@@ -49,8 +50,9 @@ const DetailProfile = () => {
 
             <div className="flex justify-end space-x-3">
               <EditProfile profile={data} />
+              <DeleteProfile />
 
-              <button className="btn btn-outline btn-error">Delete</button>
+              {/* <button className="btn btn-outline btn-error">Delete</button> */}
             </div>
           </div>
 

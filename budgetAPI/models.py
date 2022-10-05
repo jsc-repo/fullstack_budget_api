@@ -25,7 +25,6 @@ def populate_profile(sociallogin, user, *args, **kwargs):
 
     if sociallogin.account.provider == "github":
         data = user.socialaccount_set.filter(provider="github")[0].extra_data
-        print("DATA", data)
         avatar_url = data.get("avatar_url")
         email = data.get("email")
 

@@ -239,6 +239,7 @@ const useAuthStore = create((set, get) => ({
         return data;
       } else {
         console.error(res.error);
+        // return null;
       }
     } catch (error) {
       console.error(error);
@@ -269,6 +270,32 @@ const useAuthStore = create((set, get) => ({
         return res.status;
       } else {
         console.error(res.status);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  },
+  deleteProfile: async () => {
+    const requestOptions = {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Token ${get().token}`,
+      },
+    };
+    try {
+      const res = await fetch(
+        `http://127.0.0.1:8000/api/v1/profile/`,
+        requestOptions
+      );
+      if (res.ok) {
+        set(() => ({
+          profile: null,
+        }));
+        get().removeToken();
+        return res.status;
+      } else {
+        console.error(res.error);
       }
     } catch (error) {
       console.error(error);

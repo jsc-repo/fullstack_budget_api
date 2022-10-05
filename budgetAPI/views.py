@@ -1,7 +1,3 @@
-from email.policy import HTTP
-from django.shortcuts import render
-from budgetAPI import serializers
-
 from budgetAPI.models import Profile, Category, Expense, Project
 from budgetAPI.permissions import IsOwnerOnly, IsOwnerOrReadOnly
 from budgetAPI.serializers import (
@@ -96,20 +92,6 @@ class ExpenseViewSet(viewsets.ModelViewSet):
     #     return context
 
 
-# class ProfileViewSet(viewsets.ModelViewSet):
-#     permission_classes = [permissions.IsAuthenticated, IsOwnerOnly]
-#     # queryset = Profile.objects.all()
-
-#     def get_queryset(self):
-#         return Profile.objects.filter(user=self.request.user)
-
-#     def get_serializer_class(self):
-#         if self.action in ["list", "retrieve"]:
-#             return ReadProfileSerializer
-#         elif self.action in ["update", "destroy"]:
-#             return WriteProfileSerializer
-
-
 @api_view(["GET", "PUT", "DELETE"])
 @permission_classes((permissions.IsAuthenticated, IsOwnerOnly))
 def profile(request):
@@ -134,7 +116,8 @@ def profile(request):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == "DELETE":
-        profile.delete()
+
+        profile.user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
