@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 
-const GitHubLogout = () => {
+const Logout = () => {
   const removeToken = useAuthStore((state) => state.removeToken);
   const removeUser = useAuthStore((state) => state.removeUser);
   const navigate = useNavigate();
@@ -26,11 +26,11 @@ const GitHubLogout = () => {
   };
   return (
     <form onSubmit={handleSubmitLogout}>
-      <button className="btn btn-ghost normal-case text-xl" type="submit">
+      <button className="normal-case text-xl font-medium" type="submit">
         LOGOUT
       </button>
     </form>
   );
 };
 
-export default GitHubLogout;
+export default Logout;

@@ -30,7 +30,6 @@ const EditProfile = ({ profile }) => {
   });
 
   const onSubmit = (data) => {
-    console.log("edit profile", data);
     const requestBody = {
       birth_date: data.birth_date,
       email: data.email,

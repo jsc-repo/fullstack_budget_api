@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import GitHubLogin from "./components/auth/GitHubLogin";
-import GitHubLogout from "./components/auth/GitHubLogout";
+import Logout from "./components/auth/Logout";
 import ProtectedRoutes from "./components/auth/ProtectedRoutes";
 import ListCategory from "./components/categories/ListCategory";
 import ListExpenses from "./components/expenses/ListExpenses";
@@ -34,7 +34,7 @@ function App() {
           <Route index element={<Index />} />
           <Route path="/" element={<Index />} />
           <Route path="/github/login" element={<GitHubLogin />} />
-          <Route path="/github/logout" element={<GitHubLogout />} />
+          <Route path="/github/logout" element={<Logout />} />
           <Route path="categories" element={<ListCategory />} />
           <Route element={<ProtectedRoutes profile={profile} />}>
             <Route path="profile" element={<ProfileLayout />}>
