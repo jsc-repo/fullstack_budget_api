@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 
-const ProtectedRoutes = ({ user, redirectPath = "/categories", children }) => {
+const ProtectedRoutes = ({ user, redirectPath = "/", children }) => {
   const token = useAuthStore((state) => state.token);
   const fetchUser = useAuthStore((state) => state.fetchUser);
   const { isLoading, isError, error, data } = useQuery(["user"], fetchUser);

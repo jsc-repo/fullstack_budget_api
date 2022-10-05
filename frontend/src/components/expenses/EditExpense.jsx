@@ -43,7 +43,7 @@ const EditExpense = ({ projectId, expense }) => {
         setNotification({ message: null, color: null });
       }, 2000);
       reset();
-      queryClient.invalidateQueries("expenses");
+      queryClient.invalidateQueries(["expenses"]);
     },
   });
 

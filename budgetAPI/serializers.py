@@ -1,3 +1,4 @@
+from email.policy import default
 from threading import local
 from django.conf import settings
 from rest_framework import serializers
@@ -129,35 +130,18 @@ class WriteProjectSerializer(serializers.ModelSerializer):
         fields = ["user", "name", "budget"]
 
 
-class ProfileSerializer(serializers.ModelSerializer):
+class ReadProfileSerializer(serializers.ModelSerializer):
+    user = serializers.CharField(default=serializers.CurrentUserDefault())
+
     class Meta:
         model = Profile
-        exclude = ["user"]
+        fields = ["user", "birth_date", "email", "avatar_url"]
+        read_only_fields = fields
 
 
-# class ReadUserSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = settings.AUTH_USER_MODEL
-#         fields = [
-#             "id",
-#             "username",
-#         ]
-#         read_only_fields = fields
+class WriteProfileSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
-
-# class Album(models.Model):
-#     album_name = models.CharField(max_length=100)
-#     artist = models.CharField(max_length=100)
-
-# class Track(models.Model):
-#     album = models.ForeignKey(Album, related_name='tracks', on_delete=models.CASCADE)
-#     order = models.IntegerField()
-#     title = models.CharField(max_length=100)
-#     duration = models.IntegerField()
-
-#     class Meta:
-#         unique_together = ['album', 'order']
-#         ordering = ['order']
-
-#     def __str__(self):
-#         return '%d: %s' % (self.order, self.title)
+    class Meta:
+        model = Profile
+        fields = ["user", "birth_date", "email", "avatar_url"]

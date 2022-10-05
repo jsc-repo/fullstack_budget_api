@@ -18,5 +18,4 @@ class GitHubLogin(SocialLoginView):
 
 def github_callback(request):
     params = urllib.parse.urlencode(request.GET)
-    print(params)
     return redirect(f"http://127.0.0.1:5173/github/login?{params}")

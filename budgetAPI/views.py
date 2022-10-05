@@ -1,4 +1,6 @@
+from email.policy import HTTP
 from django.shortcuts import render
+from budgetAPI import serializers
 
 from budgetAPI.models import Profile, Category, Expense, Project
 from budgetAPI.permissions import IsOwnerOnly, IsOwnerOrReadOnly
@@ -6,14 +8,16 @@ from budgetAPI.serializers import (
     ReadProjectSerializer,
     WriteProjectSerializer,
     ReadCategorySerializer,
-    ProfileSerializer,
+    ReadProfileSerializer,
+    WriteProfileSerializer,
     ReadExpenseSerializer,
     WriteExpenseSerializer,
     # ReadUserSerializer,
 )
+from rest_framework.views import APIView
 from rest_framework import generics, permissions, viewsets, status
 from rest_framework.response import Response
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 
 
 # Create your views here.
@@ -92,24 +96,54 @@ class ExpenseViewSet(viewsets.ModelViewSet):
     #     return context
 
 
-# class ProfileViewSet(viewsets.ReadOnlyModelViewSet):
-#     queryset = Profile.objects.all()
-#     serializer_class = ProfileSerializer
+# class ProfileViewSet(viewsets.ModelViewSet):
+#     permission_classes = [permissions.IsAuthenticated, IsOwnerOnly]
+#     # queryset = Profile.objects.all()
+
+#     def get_queryset(self):
+#         return Profile.objects.filter(user=self.request.user)
+
+#     def get_serializer_class(self):
+#         if self.action in ["list", "retrieve"]:
+#             return ReadProfileSerializer
+#         elif self.action in ["update", "destroy"]:
+#             return WriteProfileSerializer
 
 
-# class ReadUserViewSet(viewsets.ReadOnlyModelViewSet):
-#     queryset = User.objects.all()
-#     serializer_class = ReadUserSerializer
-#     permission_classes = [permissions.IsAdminUser]
+@api_view(["GET", "PUT", "DELETE"])
+@permission_classes((permissions.IsAuthenticated, IsOwnerOnly))
+def profile(request):
+
+    context = {"request": request}
+
+    try:
+        profile = Profile.objects.get(user=request.user)
+    except Profile.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == "GET":
+        serializer = ReadProfileSerializer(profile)
+        return Response(serializer.data)
+
+    elif request.method == "PUT":
+        serializer = WriteProfileSerializer(profile, data=request.data, context=context)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == "DELETE":
+        profile.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-# class ProfileList(generics.ListCreateAPIView):
-#     queryset = Profile.objects.all()
-#     serializer_class = ProfileSerializer
-#     permission_classes = [permissions.IsAdminUser]
+# class ProfileView(APIView):
+#     """
+#     Users can only GET or UPDATE their profile info
+#     """
 
-
-# class ProfileDetail(generics.RetrieveUpdateDestroyAPIView):
-#     queryset = Profile.objects.all()
-#     serializer_class = ProfileSerializer
-#     permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+#     def get(self, request, format=None):
+#         profile = Profile.objects.get(user=request.user)
+#         serializer = ReadProfileSerializer(profile, many=True)
+#         return Response(serializer.data)

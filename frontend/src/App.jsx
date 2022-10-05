@@ -6,22 +6,25 @@ import GitHubLogout from "./components/auth/GitHubLogout";
 import ProtectedRoutes from "./components/auth/ProtectedRoutes";
 import ListCategory from "./components/categories/ListCategory";
 import ListExpenses from "./components/expenses/ListExpenses";
+import DetailProfile from "./components/profile/DetailProfile";
 import CreateProjectForm from "./components/projects/CreateProjectForm";
 import ListProjects from "./components/projects/ListProjects";
 import BaseLayout from "./pages/BaseLayout";
 import Expense from "./pages/Expense";
 import Index from "./pages/Index";
 import NoMatch from "./pages/NoMatch";
+import ProfileLayout from "./pages/ProfileLayout";
 import Project from "./pages/Project";
 import useAuthStore from "./store/authStore";
 
 function App() {
-  const token = useAuthStore((state) => state.token);
-  const fetchUser = useAuthStore((state) => state.fetchUser);
+  const fetchProfile = useAuthStore((state) => state.fetchProfile);
+
+  const profile = useAuthStore((state) => state.profile);
+
   useEffect(() => {
-    fetchUser();
-  }, [token]);
-  const user = useAuthStore((state) => state.user);
+    fetchProfile();
+  }, []);
 
   return (
     <>
@@ -33,7 +36,10 @@ function App() {
           <Route path="/github/login" element={<GitHubLogin />} />
           <Route path="/github/logout" element={<GitHubLogout />} />
           <Route path="categories" element={<ListCategory />} />
-          <Route element={<ProtectedRoutes user={user} />}>
+          <Route element={<ProtectedRoutes profile={profile} />}>
+            <Route path="profile" element={<ProfileLayout />}>
+              <Route index element={<DetailProfile />} />
+            </Route>
             <Route path="projects" element={<Project />}>
               <Route path=":projectId" element={<ListExpenses />} />
               <Route index element={<ListProjects />} />

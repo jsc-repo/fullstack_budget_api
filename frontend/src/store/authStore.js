@@ -2,6 +2,7 @@ import create from "zustand";
 
 const useAuthStore = create((set, get) => ({
   user: null,
+  profile: null,
   setUser: (userData) => set({ user: userData }),
   removeUser: () => set({ user: null }),
   notification: { message: null, color: null },
@@ -209,6 +210,62 @@ const useAuthStore = create((set, get) => ({
         requestOptions
       );
       if (res.ok) {
+        return res.status;
+      } else {
+        console.error(res.status);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  },
+  fetchProfile: async () => {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Token ${get().token}`,
+      },
+    };
+    try {
+      const res = await fetch(
+        `http://127.0.0.1:8000/api/v1/profile/`,
+        requestOptions
+      );
+      if (res.ok) {
+        const data = await res.json();
+        set(() => ({
+          profile: { ...data },
+        }));
+        return data;
+      } else {
+        console.error(res.error);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  },
+  editProfile: async ({ birth_date, email }) => {
+    const requestOptions = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Token ${get().token}`,
+      },
+      body: JSON.stringify({
+        birth_date,
+        email,
+      }),
+    };
+    try {
+      const res = await fetch(
+        "http://127.0.0.1:8000/api/v1/profile/",
+        requestOptions
+      );
+      if (res.ok) {
+        const data = await res.json();
+        set(() => ({
+          profile: { ...data },
+        }));
         return res.status;
       } else {
         console.error(res.status);

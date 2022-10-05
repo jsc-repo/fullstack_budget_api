@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import DetailProject from "./DetailProject";
 import useAuthStore from "../../store/authStore";
-import { useEffect } from "react";
 
 const ListProjects = () => {
   const fetchProjects = useAuthStore((state) => state.fetchProjects);
@@ -28,7 +27,9 @@ const ListProjects = () => {
         </h3>
       )}
       {!isLoading && !isError && data && !data.length && (
-        <span className="text-red-400">You have no projects</span>
+        <div className="text-red-400 p-5 text-2xl text-center">
+          No projects to display
+        </div>
       )}
       {data && data.length > 0 && <DetailProject projects={data} />}
     </>

@@ -4,34 +4,68 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from allauth.account.signals import user_logged_in
+from allauth.account.signals import user_signed_up
 
 
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    bio = models.TextField(max_length=500, blank=True)
+    # bio = models.TextField(max_length=500, blank=True)
     birth_date = models.DateField(null=True, blank=True)
+    email = models.EmailField(unique=True, blank=True, null=True)
+    avatar_url = models.URLField(default="")
 
-    # @receiver(user_logged_in)
-    # def populate_profile(sociallogin, user, *args, **kwargs):
-    #     user.profile = Profile()
-
-    #     user.socialaccount_set
-    #     if sociallogin.account.provider=="github":
-
-    # def __str__(self) -> str:
-    #     return self.user.username
+    def __str__(self) -> str:
+        return self.user.username
 
 
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
+@receiver(user_signed_up)
+def populate_profile(sociallogin, user, *args, **kwargs):
+
+    user.profile = Profile()
+
+    if sociallogin.account.provider == "github":
+        data = user.socialaccount_set.filter(provider="github")[0].extra_data
+        print("DATA", data)
+        avatar_url = data.get("avatar_url")
+        email = data.get("email")
+
+    if sociallogin.account.provider == "google":
+        data = user.socialaccount_set.filter(provider="google")[0].extra_data
+        avatar_url = data.get("avatar_url")
+        email = data.get("email")
+
+    user.profile.avatar_url = avatar_url
+    user.email = email
+    user.profile.save()
 
 
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def save_user_profile(sender, instance, **kwargs):
-    instance.profile.save()
+# @receiver(post_save, sender=settings.AUTH_USER_MODEL)
+# def create_user_profile(sender, instance, created, **kwargs):
+#     if created:
+#         Profile.objects.create(user=instance)
+
+
+# @receiver(post_save, sender=settings.AUTH_USER_MODEL)
+# def save_user_profile(sender, instance, **kwargs):
+#     instance.profile.save()
+
+
+# @receiver(user_signed_up)
+# def populate_profile(sociallogin, user, *args, **kwargs):
+#     print(sociallogin)
+#     profile = Profile(user=user)
+
+#     if sociallogin.account.provider == "github":
+#         data = user.socialaccount_set.filter(provider="github")[0].extra_data
+#         print("DATA", data)
+#         avatar_url = data.get("avatar_url")
+
+#     if sociallogin.account.provider == "google":
+#         data = user.socialaccount_set.filter(provider="google")[0].extra_data
+#         avatar_url = data.get("avatar_url")
+
+#     user.profile.avatar_url = avatar_url
+#     user.profile.save()
 
 
 class Category(models.Model):
