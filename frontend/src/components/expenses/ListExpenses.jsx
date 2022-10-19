@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
-import { useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 import DeleteProjectForm from "../projects/DeleteProjectForm";
@@ -67,7 +66,7 @@ const ListExpenses = () => {
               </tbody>
             </table>
           </div>
-          {/* testing pagination */}
+
           <div className="btn-group flex justify-center">
             {data?.previous && (
               <button
@@ -85,8 +84,6 @@ const ListExpenses = () => {
                 className="btn btn-info"
                 onClick={() => {
                   setSearchQuery({ page: page - 1 });
-                  // setPage(page - 1);
-                  // setPageUrl(data?.previous);
                 }}
               >
                 Previous Page
@@ -99,8 +96,6 @@ const ListExpenses = () => {
               className="btn btn-accent"
               onClick={() => {
                 if (!isPreviousData && data?.next) {
-                  // setPage(page + 1);
-                  // setPageUrl(data?.next);
                   setSearchQuery({ page: page + 1 });
                 }
               }}
