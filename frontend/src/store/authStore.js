@@ -48,7 +48,7 @@ const useAuthStore = create((set, get) => ({
       );
       if (res.ok) {
         const data = await res.json();
-        return data;
+        return data.results;
       } else {
         console.error(res.error);
       }
@@ -56,7 +56,7 @@ const useAuthStore = create((set, get) => ({
       console.error(error);
     }
   },
-  fetchExpenses: async (project_id) => {
+  fetchExpenses: async (project_id, page = 1) => {
     const requestOptions = {
       method: "GET",
       headers: {
@@ -66,9 +66,10 @@ const useAuthStore = create((set, get) => ({
     };
     try {
       const res = await fetch(
-        `http://127.0.0.1:8000/api/v1/projects/${project_id}/expenses/`,
+        `http://127.0.0.1:8000/api/v1/projects/${project_id}/expenses/?page=${page}`,
         requestOptions
       );
+      // const res = await fetch(pageUrl, requestOptions);
       if (res.ok) {
         const data = await res.json();
         return data;

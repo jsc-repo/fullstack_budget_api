@@ -20,7 +20,7 @@ from rest_framework.decorators import action, api_view, permission_classes
 class ProjectViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsOwnerOnly]
 
-    pagination_class = None
+    # pagination_class = None
 
     def get_serializer_class(self):
         if self.action in ["list", "retrieve"]:
@@ -28,11 +28,13 @@ class ProjectViewSet(viewsets.ModelViewSet):
         return WriteProjectSerializer
 
     def get_queryset(self):
-        return (
+
+        projects = (
             Project.objects.prefetch_related("expenses")
             .prefetch_related("expenses__category")
             .filter(user=self.request.user)
         )
+        return projects
 
     def perform_create(self, serializer):
         return serializer.save(user=self.request.user)
@@ -44,9 +46,13 @@ class ProjectViewSet(viewsets.ModelViewSet):
             project = Project.objects.get(pk=pk)
 
             queryset = project.expenses.all()
+
+            page = self.paginate_queryset(queryset)
+            if page is not None:
+                serializer = ReadExpenseSerializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
+
             serializer = ReadExpenseSerializer(queryset, many=True)
-            # queryset = Expense.objects.filter(project__id=pk)
-            # serializer = ReadExpenseSerializer(queryset, many=True)
             return Response(serializer.data)
         return Response(status=status.HTTP_403_FORBIDDEN)
 
