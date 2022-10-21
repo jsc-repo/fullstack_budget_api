@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import React from "react";
+import { useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 import DeleteProjectForm from "../projects/DeleteProjectForm";
@@ -9,6 +9,7 @@ import EditExpense from "./EditExpense";
 
 const ListExpenses = () => {
   const { projectId } = useParams();
+  const [filters, setFilters] = useState("");
   const [query, setSearchQuery] = useSearchParams({ page: 1 });
   const page = parseInt(query.get("page"));
 
@@ -17,17 +18,26 @@ const ListExpenses = () => {
     useQuery(
       ["expenses", projectId, page],
       () => fetchExpenses(projectId, page),
-      { keepPreviousData: true }
+      {
+        keepPreviousData: true,
+      }
     );
 
   return (
     <>
+      {isLoading && <div className="alert alert-success">Loading</div>}
+
       <div className="flex justify-between">
         <CreateExpense projectId={projectId} />
+        <input
+          type="text"
+          placeholder="Search for an expense"
+          className="input input-bordered w-full max-w-xs"
+          value={filters}
+          onChange={(e) => setFilters(e.target.value)}
+        />
         <DeleteProjectForm projectId={projectId} />
       </div>
-
-      {isLoading && <div className="alert alert-success">Loading</div>}
 
       {isSuccess && data.results.length > 0 && (
         <>
@@ -43,26 +53,32 @@ const ListExpenses = () => {
                   <th>Action</th>
                 </tr>
               </thead>
+
               <tbody>
-                {data.results.map((expense) => {
-                  return (
-                    <tr key={expense.id}>
-                      <th>{expense.id}</th>
-                      <td>{expense.expense_name}</td>
-                      <td>${expense.amount}</td>
-                      <td>{expense.date_of_expense}</td>
-                      <td>
-                        {expense.category
-                          ? expense.category["category_name"]
-                          : ""}
-                      </td>
-                      <td className="space-x-2">
-                        <DeleteExpense expenseId={expense.id} />
-                        <EditExpense projectId={projectId} expense={expense} />
-                      </td>
-                    </tr>
-                  );
-                })}
+                {data.results
+                  .filter((expense) => expense.expense_name.includes(filters))
+                  ?.map((expense) => {
+                    return (
+                      <tr key={expense.id}>
+                        <th>{expense.id}</th>
+                        <td>{expense.expense_name}</td>
+                        <td>${expense.amount}</td>
+                        <td>{expense.date_of_expense}</td>
+                        <td>
+                          {expense.category
+                            ? expense.category["category_name"]
+                            : ""}
+                        </td>
+                        <td className="space-x-2">
+                          <DeleteExpense expenseId={expense.id} />
+                          <EditExpense
+                            projectId={projectId}
+                            expense={expense}
+                          />
+                        </td>
+                      </tr>
+                    );
+                  })}
               </tbody>
             </table>
           </div>
@@ -86,7 +102,7 @@ const ListExpenses = () => {
                   setSearchQuery({ page: page - 1 });
                 }}
               >
-                Previous Page
+                Prev
               </button>
             )}
 
@@ -101,7 +117,7 @@ const ListExpenses = () => {
               }}
               disabled={isPreviousData || !data?.next}
             >
-              Next Page
+              Next
             </button>
             <button
               className="btn btn-secondary"
@@ -112,7 +128,7 @@ const ListExpenses = () => {
               }}
               disabled={isPreviousData || !data?.next}
             >
-              Last Page
+              Last
             </button>
           </div>
         </>
