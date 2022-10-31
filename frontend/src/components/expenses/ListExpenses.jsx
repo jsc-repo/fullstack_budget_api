@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { Outlet, useParams, useSearchParams } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 import DeleteProjectForm from "../projects/DeleteProjectForm";
 import CreateExpense from "./CreateExpense";
@@ -133,6 +133,7 @@ const ListExpenses = () => {
           </div>
         </>
       )}
+      <Outlet />
     </>
   );
 };

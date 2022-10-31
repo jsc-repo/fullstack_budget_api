@@ -57,46 +57,55 @@ const EditProfile = ({ profile }) => {
             ✕
           </label>
           <h3 className="text-lg font-bold">Edit Profile</h3>
-          <form
-            className="py-4 flex flex-col w-4/5 mx-auto space-y-2 max-w-xs"
-            onSubmit={handleSubmit(onSubmit)}
-          >
-            <input
-              className="input input-bordered w-full"
-              type="date"
-              placeholder="birth date"
-              {...register("birth_date", {
-                required: true,
-              })}
-              aria-invalid={errors.birth_date ? "true" : "false"}
-            />
-            {errors.birth_date?.type === "required" && (
-              <p className="text-red-500" role="alert">
-                Please enter your birthdate
-              </p>
-            )}
+          <div className="form-control">
+            <form
+              className="py-4 flex flex-col w-4/5 mx-auto space-y-2 max-w-xs"
+              onSubmit={handleSubmit(onSubmit)}
+            >
+              <label
+                className="input-group input-group-vertical"
+                htmlFor="birth_date"
+              >
+                <span>Birthdate</span>
+                <input
+                  id="birth_date"
+                  className="input input-bordered w-full"
+                  type="date"
+                  placeholder="birth date"
+                  {...register("birth_date", {
+                    required: true,
+                  })}
+                  aria-invalid={errors.birth_date ? "true" : "false"}
+                />
+                {errors.birth_date?.type === "required" && (
+                  <p className="text-red-500" role="alert">
+                    Please enter your birthdate
+                  </p>
+                )}
+              </label>
 
-            <input
-              type="email"
-              className="input input-bordered w-full"
-              placeholder="email"
-              {...register("email", {
-                required: true,
-              })}
-              aria-invalid={errors.email ? "true" : "false"}
-            />
-            {errors.email?.type === "required" && (
-              <p className="text-red-500" role="alert">
-                please enter your email
-              </p>
-            )}
+              <input
+                type="email"
+                className="input input-bordered w-full"
+                placeholder="email"
+                {...register("email", {
+                  required: true,
+                })}
+                aria-invalid={errors.email ? "true" : "false"}
+              />
+              {errors.email?.type === "required" && (
+                <p className="text-red-500" role="alert">
+                  please enter your email
+                </p>
+              )}
 
-            <input
-              className="btn btn-md btn-primary"
-              type="submit"
-              value="Edit"
-            />
-          </form>
+              <input
+                className="btn btn-md btn-primary"
+                type="submit"
+                value="Edit"
+              />
+            </form>
+          </div>
         </div>
       </div>
     </>

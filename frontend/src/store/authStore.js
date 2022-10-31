@@ -302,6 +302,30 @@ const useAuthStore = create((set, get) => ({
       console.error(error);
     }
   },
+  fetchStats: async (project_id) => {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Token ${get().token}`,
+      },
+    };
+    try {
+      const res = await fetch(
+        `http://127.0.0.1:8000/api/v1/projects/${project_id}/stats`,
+        requestOptions
+      );
+      // const res = await fetch(pageUrl, requestOptions);
+      if (res.ok) {
+        const data = await res.json();
+        return data;
+      } else {
+        console.error(res.error);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  },
 }));
 
 export default useAuthStore;

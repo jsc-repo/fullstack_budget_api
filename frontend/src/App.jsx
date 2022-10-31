@@ -9,6 +9,7 @@ import ListExpenses from "./components/expenses/ListExpenses";
 import DetailProfile from "./components/profile/DetailProfile";
 import CreateProjectForm from "./components/projects/CreateProjectForm";
 import ListProjects from "./components/projects/ListProjects";
+import ListStats from "./components/stats/ListStats";
 import BaseLayout from "./pages/BaseLayout";
 import Expense from "./pages/Expense";
 import Index from "./pages/Index";
@@ -42,6 +43,7 @@ function App() {
             </Route>
             <Route path="projects" element={<Project />}>
               <Route path=":projectId" element={<ListExpenses />} />
+              <Route path=":projectId/stats" element={<ListStats />} />
               <Route index element={<ListProjects />} />
             </Route>
             <Route path="expenses/*" element={<Expense />} />

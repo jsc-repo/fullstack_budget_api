@@ -1,3 +1,6 @@
+from django.db.models import Count, Sum, Max, Min, Avg, Q
+from django.db.models.functions import TruncMonth
+
 from budgetAPI.models import Profile, Category, Expense, Project
 from budgetAPI.permissions import IsOwnerOnly, IsOwnerOrReadOnly
 from budgetAPI.serializers import (
@@ -55,6 +58,66 @@ class ProjectViewSet(viewsets.ModelViewSet):
             serializer = ReadExpenseSerializer(queryset, many=True)
             return Response(serializer.data)
         return Response(status=status.HTTP_403_FORBIDDEN)
+
+    @action(detail=True, methods=["get"])
+    def stats(self, request, pk=None, *args, **kwargs):
+
+        expenses = (
+            Expense.objects.filter(project_id=pk, user=request.user)
+            .select_related("project", "category")
+            .order_by("-amount")
+            .values(
+                "expense_name", "amount", "date_of_expense", "category__category_name"
+            )
+        )
+
+        expenses_stats = expenses.aggregate(
+            Sum("amount"), Max("amount"), Min("amount"), Avg("amount")
+        )
+
+        # max = expenses.first()
+
+        # print(max)
+
+        group_by_month = (
+            expenses.annotate(month=TruncMonth("date_of_expense"))
+            .values("month")
+            .annotate(total=Sum("amount"))
+        )
+
+        # print(group_by_month)
+
+        month_labels = []
+
+        month_data = []
+
+        for e in group_by_month:
+            month_labels.append(e.get("month").strftime("%b, %Y"))
+            month_data.append(str(e.get("total")))
+
+        category_labels = []
+        category_data = []
+
+        group_by_category = Category.objects.values("category_name").annotate(
+            total=Sum("expenses__amount")
+        )
+
+        for c in group_by_category:
+            category_labels.append(c.get("category_name"))
+            category_data.append(str(c.get("total")))
+
+        data = {
+            "expenses_sum": expenses_stats["amount__sum"],
+            "expenses_max": expenses_stats["amount__max"],
+            "expenses_min": expenses_stats["amount__min"],
+            "expenses_avg": expenses_stats["amount__avg"],
+            # "month_labels": month_labels,
+            # "month_data": month_data,
+            "category_labels": category_labels,
+            "category_data": category_data,
+        }
+
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):

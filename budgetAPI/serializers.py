@@ -1,6 +1,4 @@
-from email.policy import default
-from threading import local
-from django.conf import settings
+from django.db.models import Avg, Sum
 from rest_framework import serializers
 from budgetAPI.models import Category, Expense, Profile, Project
 
